@@ -154,24 +154,22 @@ AWS_DEFAULT_ACL = None  # Prevents default bucket policies overriding permission
 AWS_QUERYSTRING_AUTH = False  # Ensures static/media URLs don't have query params
 
 # Static and Media Files
-STATIC_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/static/"
-MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/media/"
-STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"  # Static files in S3
-DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"  # Media files in S3
-
-# Local Static and Media Root (for development only)
 if DEBUG:  # In local development, use local static/media
     STATIC_URL = '/static/'
     STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     MEDIA_URL = '/media/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-    
-# Additional settings for Whitenoise (useful for serving files locally)
-if DEBUG:
-    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-    
-    
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"  # for local static files
+else: # production
+    STATIC_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/static/"
+    MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/media/"
+    STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"  # Static files in S3
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"  # Media files in S3
+
+# Default static root (for both environments)
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
